@@ -1,0 +1,14 @@
+production:
+  adapter: sqlite3
+  database: db/redmine.db
+  timeout: 5000
+
+development:
+  adapter: sqlite3
+  database: db/redmine_dev.db
+  timeout: 5000
+
+test:
+  adapter: sqlite3
+  database: db/redmine_test.db
+  timeout: 5000
