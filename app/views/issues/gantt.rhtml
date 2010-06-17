@@ -52,13 +52,15 @@ header_heigth = 18
 headers_height = header_heigth
 show_weeks = false
 show_days = false
+show_days_num = false
 
 if @gantt.zoom >1
     show_weeks = true
     headers_height = 2*header_heigth
     if @gantt.zoom > 2
         show_days = true
-        headers_height = 3*header_heigth
+		show_days_num = true
+		headers_heigth = 4 * header_heigth
     end
 end
 
@@ -72,13 +74,13 @@ t_height = g_height + headers_height
 <td style="width:<%= subject_width %>px; padding:0px;">
 
 <div style="position:relative;height:<%= t_height + 24 %>px;width:<%= subject_width + 1 %>px;">
-<div style="right:-2px;width:<%= subject_width %>px;height:<%= headers_height %>px;background: #eee;" class="gantt_hdr"></div>
+<div style="right:-2px;width:<%= subject_width %>px;height:<%= 2 * headers_height %>px;background: #eee;" class="gantt_hdr"></div>
 <div style="right:-2px;width:<%= subject_width %>px;height:<%= t_height %>px;border-left: 1px solid #c0c0c0;overflow:hidden;" class="gantt_hdr"></div>
 <%
 #
 # Tasks subjects
 #
-top = headers_height + 8
+top = headers_height + 44
 @gantt.events.each do |i| %>
     <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;"><small>    
     <% if i.is_a? Issue %>
@@ -97,7 +99,7 @@ end %>
 <td>
 
 <div style="position:relative;height:<%= t_height + 24 %>px;overflow:auto;">
-<div style="width:<%= g_width-1 %>px;height:<%= headers_height %>px;background: #eee;" class="gantt_hdr">&nbsp;</div>
+<div style="width:<%= g_width-1 %>px;height:<%= 2 * headers_height %>px;background: #eee;" class="gantt_hdr">&nbsp;</div>
 <% 
 #
 # Months headers
@@ -150,16 +152,40 @@ end %>
 
 <% 
 #
+# Days Num headers
+#
+if show_days_num
+	left = 0
+	height = g_height + header_heigth - 1
+	wday = @gantt.date_from.cwday
+	day_num = @gantt.date_from
+	(@gantt.date_to - @gantt.date_from + 1).to_i.times do 
+	width =  zoom - 1
+	%>
+	<div style="left:<%= left %>px;top:37px;width:<%= width %>px;height:<%= height %>px;font-size:0.8em;<%= "color:#0000ff;background:#ccffff;" if wday == 6 %><%= "color:#ff0000;background:#ffcccc;" if wday == 7 %>" class="gantt_hdr">
+	<%= day_num.day %>
+	</div>
+	<% 
+	left = left + width+1
+	wday = wday + 1
+	day_num = day_num + 1
+	wday = 1 if wday > 7
+	end
+end %>
+
+<% 
+#
 # Days headers
 #
 if show_days
 	left = 0
 	height = g_height + header_heigth - 1
+	top = show_days_num ? 55 : 37
 	wday = @gantt.date_from.cwday
 	(@gantt.date_to - @gantt.date_from + 1).to_i.times do 
 	width =  zoom - 1
 	%>
-	<div style="left:<%= left %>px;top:37px;width:<%= width %>px;height:<%= height %>px;font-size:0.7em;<%= "background:#f1f1f1;" if wday > 5 %>" class="gantt_hdr">
+	<div style="left:<%= left %>px;top:<%= top %>px;width:<%= width %>px;height:<%= height %>px;font-size:0.8em;<%= "color:#0000ff;background:#ccffff;" if wday == 6 %><%= "color:#ff0000;background:#ffcccc;" if wday == 7 %>" class="gantt_hdr">
 	<%= day_name(wday).first %>
 	</div>
 	<% 
@@ -173,7 +199,7 @@ end %>
 #
 # Tasks
 #
-top = headers_height + 10
+top = headers_height + 46
 @gantt.events.each do |i| 
   if i.is_a? Issue 
 	i_start_date = (i.start_date >= @gantt.date_from ? i.start_date : @gantt.date_from )
@@ -221,7 +247,7 @@ end %>
 # Today red line (excluded from cache)
 #
 if Date.today >= @gantt.date_from and Date.today <= @gantt.date_to %>
-    <div style="position: absolute;height:<%= g_height %>px;top:<%= headers_height + 1 %>px;left:<%= ((Date.today-@gantt.date_from+1)*zoom).floor()-1 %>px;width:10px;border-left: 1px dashed red;">&nbsp;</div>
+    <div style="position: absolute;height:<%= g_height %>px;top:<%= 2 * headers_height %>px;left:<%= ((Date.today-@gantt.date_from+1)*zoom).floor()-1 %>px;width:10px;border-left: 1px dashed red;">&nbsp;</div>
 <% end %>
 
 </div>
