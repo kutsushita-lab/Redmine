@@ -87,7 +87,7 @@ top = headers_height + 8
 @gantt.events.each do |i| %>
     <div style="position: absolute;line-height:1.2em;height:16px;top:<%= top %>px;left:4px;overflow:hidden;"><small>    
     <% if i.is_a? Issue %>
-      	<%= h("#{i.project} -") unless @project && @project == i.project %>
+      	<%= h("#{i.project} -test") unless @project && @project == i.project %>
       	<%= link_to_issue i %>
   	<% else %>
 		<span class="icon icon-package">
